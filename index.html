@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Kripto Terminali V5</title>
+    <title>Gerçek AI Kripto Terminali</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0b0e11; color: #eaecef; padding: 15px; margin: 0; font-size: 14px; }
         .container { max-width: 800px; margin: auto; }
@@ -13,29 +12,31 @@
         .card { background-color: #1e2329; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         h3 { margin-top: 0; color: #848e9c; font-size: 14px; border-bottom: 1px solid #2b3139; padding-bottom: 5px; text-transform: uppercase; display: flex; justify-content: space-between;}
         
+        /* Yapay Zeka Ayarları */
+        .ai-settings { background-color: #1a2026; padding: 10px; border-radius: 6px; border: 1px dashed #f3ba2f; margin-bottom: 15px;}
+        .ai-settings a { color: #2196f3; text-decoration: none; font-size: 12px;}
+        .ai-settings a:hover { text-decoration: underline; }
+
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .box { background-color: #2b3139; padding: 10px; border-radius: 6px; text-align: center; }
         
-        .green { color: #0ecb81; } .red { color: #f6465d; } .yellow { color: #f3ba2f; } .blue { color: #2196f3; }
-        .text-bold { font-weight: bold; } .text-lg { font-size: 16px; } .text-sm { font-size: 12px; }
+        .green { color: #0ecb81; } .red { color: #f6465d; } .yellow { color: #f3ba2f; }
+        .text-bold { font-weight: bold; } .text-lg { font-size: 16px; } 
         
-        /* Zaman Dilimi Butonları */
         .tf-buttons { display: flex; gap: 5px; justify-content: center; margin-bottom: 15px; }
         .tf-btn { background-color: #2b3139; color: #eaecef; border: 1px solid #3a4149; padding: 5px 15px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .tf-btn.active { background-color: #f3ba2f; color: #0b0e11; font-weight: bold; }
         
-        /* Formlar */
         input, select { background-color: #0b0e11; color: #eaecef; border: 1px solid #3a4149; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; margin-bottom: 5px;}
         .action-btn { background-color: #2196f3; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
         .action-btn:active { transform: scale(0.98); }
 
-        /* Portföy Tablosu */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;}
         th, td { text-align: left; padding: 8px; border-bottom: 1px solid #2b3139; }
         th { color: #848e9c; }
 
-        .analysis-text { font-size: 14px; line-height: 1.6; color: #eaecef; background-color: #1a2026; padding: 15px; border-radius: 6px; border-left: 4px solid #f3ba2f; margin-top: 10px;}
+        .analysis-text { font-size: 14px; line-height: 1.6; color: #eaecef; background-color: #0b0e11; padding: 15px; border-radius: 6px; border-left: 4px solid #9c27b0; margin-top: 10px;}
         .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; background-color: #0b0e11; margin: 2px;}
 
         .update-btn { background-color: #f3ba2f; color: #0b0e11; border: none; padding: 15px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 30px;}
@@ -43,40 +44,23 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Pro Kripto Terminali V5</h1>
+        <h1>🧠 Gerçek AI Kripto Terminali</h1>
         <div class="timer" id="timer">Sistem yükleniyor...</div>
+
+        <div class="ai-settings">
+            <h3 style="border:none; margin-bottom:5px; color:#f3ba2f;">⚙️ Gemini AI Ayarları</h3>
+            <div style="display: flex; gap: 5px;">
+                <input type="password" id="api-key-input" placeholder="Google Gemini API Anahtarınızı Buraya Yapıştırın">
+                <button class="action-btn" style="width: 100px; background-color: #0ecb81;" onclick="saveApiKey()">Kaydet</button>
+            </div>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank">Ücretsiz API Anahtarı Almak İçin Tıklayın</a>
+        </div>
 
         <div class="tf-buttons" id="tf-buttons">
             <button class="tf-btn" onclick="changeTF('15m')">15D (Scalp)</button>
             <button class="tf-btn" onclick="changeTF('1h')">1S (Kısa Vade)</button>
             <button class="tf-btn active" onclick="changeTF('4h')">4S (Orta Vade)</button>
             <button class="tf-btn" onclick="changeTF('1d')">1G (Uzun Vade)</button>
-        </div>
-
-        <div class="grid-2">
-            <div class="card">
-                <h3>💼 Varlıklarım (PnL)</h3>
-                <div class="grid-3">
-                    <select id="p-coin"><option value="BTC">BTC</option><option value="ETH">ETH</option><option value="SOL">SOL</option></select>
-                    <input type="number" id="p-amount" placeholder="Miktar" step="0.001">
-                    <input type="number" id="p-price" placeholder="Alış Fiyatı $" step="1">
-                </div>
-                <button class="action-btn" onclick="addPortfolio()">Portföye Ekle</button>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead><tr><th>Coin</th><th>Miktar</th><th>Alış</th><th>Kar/Zarar</th><th>İşlem</th></tr></thead>
-                        <tbody id="portfolio-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>🔔 Sesli Alarm (BTC)</h3>
-                <input type="number" id="alert-price" placeholder="Hedef Fiyat ($)" step="100">
-                <button class="action-btn" style="background-color: #f3ba2f; color: black;" onclick="setAlert()">Alarm Kur</button>
-                <div id="active-alert" style="margin-top: 10px; font-size: 13px; color: #848e9c;">Şu an aktif alarm yok.</div>
-                <div style="margin-top: 10px; font-size: 11px; color: #848e9c;">*Uyarı sesi için sekmenin açık kalması gerekir.</div>
-            </div>
         </div>
 
         <div class="card">
@@ -89,27 +73,48 @@
         </div>
 
         <div class="card">
-            <h3>🧠 Kuantum Analiz Motoru (BTC)</h3>
-            <div id="indicators-container" style="margin-bottom: 10px; text-align: center;">Yükleniyor...</div>
-            <div class="analysis-text" id="ai-verdict">Grafik verileri yorumlanıyor...</div>
+            <h3>✨ Yapay Zeka Piyasayı Yorumluyor (BTC)</h3>
+            <div id="indicators-container" style="margin-bottom: 10px; text-align: center;">Teknik veriler hesaplanıyor...</div>
+            <div class="analysis-text" id="ai-verdict">Gemini AI analiz için bekliyor...</div>
         </div>
 
-        <button class="update-btn" onclick="updateAll()">🔄 Tüm Sistemleri Yenile</button>
-    </div>
+        <div class="card">
+            <h3>💼 Varlıklarım (PnL)</h3>
+            <div class="grid-3">
+                <select id="p-coin"><option value="BTC">BTC</option><option value="ETH">ETH</option><option value="SOL">SOL</option></select>
+                <input type="number" id="p-amount" placeholder="Miktar" step="0.001">
+                <input type="number" id="p-price" placeholder="Alış Fiyatı $" step="1">
+            </div>
+            <button class="action-btn" onclick="addPortfolio()">Portföye Ekle</button>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead><tr><th>Coin</th><th>Miktar</th><th>Alış</th><th>Kar/Zarar</th><th>İşlem</th></tr></thead>
+                    <tbody id="portfolio-body"></tbody>
+                </table>
+            </div>
+        </div>
 
-    <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+        <button class="update-btn" onclick="updateAll()">🔄 Verileri ve Yapay Zekayı Yenile</button>
+    </div>
 
     <script>
         let intervalTime = '4h';
-        let countdown = 60;
+        let countdown = 120; // API limitlerine takılmamak için 2 dakikaya çıkardık
         let btcCurrentPrice = 0;
-        let alertTarget = null;
-        let alertTriggered = false;
-        
-        // Portföy Verilerini LocalStorage'dan Çek
+        let globalFng = 50;
         let portfolio = JSON.parse(localStorage.getItem('my_crypto_portfolio')) || [];
 
-        // Matematiksel İndikatör Fonksiyonları
+        // API Anahtarını Yükle
+        const savedKey = localStorage.getItem('gemini_api_key');
+        if(savedKey) document.getElementById('api-key-input').value = savedKey;
+
+        function saveApiKey() {
+            const key = document.getElementById('api-key-input').value;
+            localStorage.setItem('gemini_api_key', key);
+            alert("API Anahtarı tarayıcınıza güvenle kaydedildi! Şimdi sistemi yenileyin.");
+            updateAll();
+        }
+
         const calcSMA = (data, period) => data.slice(-period).reduce((a, b) => a + b) / period;
         const calcEMA = (data, period) => {
             const k = 2 / (period + 1);
@@ -123,7 +128,6 @@
             return Math.sqrt(slice.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / period);
         };
 
-        // Zaman Dilimi Değiştirme
         function changeTF(tf) {
             intervalTime = tf;
             document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
@@ -131,7 +135,7 @@
             updateAll();
         }
 
-        // Portföy İşlemleri
+        // Portföy Fonksiyonları
         function addPortfolio() {
             const coin = document.getElementById('p-coin').value;
             const amount = parseFloat(document.getElementById('p-amount').value);
@@ -150,7 +154,6 @@
         async function renderPortfolio() {
             const tbody = document.getElementById('portfolio-body');
             if(portfolio.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>Portföy boş.</td></tr>"; return; }
-            
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price');
                 const prices = await res.json();
@@ -176,35 +179,65 @@
                     </tr>`;
                 });
                 tbody.innerHTML = html;
-            } catch (e) { console.error("Portföy fiyatları çekilemedi."); }
+            } catch (e) { console.error(e); }
         }
 
-        // Alarm İşlemleri
-        function setAlert() {
-            const price = parseFloat(document.getElementById('alert-price').value);
-            if(price > 0) {
-                alertTarget = price;
-                alertTriggered = false;
-                document.getElementById('active-alert').innerHTML = `<span class="yellow">Aktif Hedef: $${price}</span> (İptal etmek için sayfayı yenile)`;
-            }
+        async function fetchFNG() {
+            try {
+                const res = await fetch('https://api.alternative.me/fng/');
+                const data = await res.json();
+                globalFng = parseInt(data.data[0].value);
+            } catch (error) { console.error(error); }
         }
-        function checkAlert() {
-            if(alertTarget && !alertTriggered && btcCurrentPrice > 0) {
-                // Eğer anlık fiyat hedefe ulaştıysa (yaklaşık %0.1 sapma payı ile)
-                if(Math.abs(btcCurrentPrice - alertTarget) < (alertTarget * 0.001) || 
-                  (btcCurrentPrice >= alertTarget && btcCurrentPrice < alertTarget * 1.05)) {
-                    document.getElementById('alarm-sound').play();
-                    alert("🔔 HEDEF VURULDU! BTC Fiyatı: $" + btcCurrentPrice);
-                    alertTriggered = true;
-                    document.getElementById('active-alert').innerText = "Alarm çaldı ve durduruldu.";
-                }
+
+        // Gerçek Yapay Zeka İstek Fonksiyonu
+        async function getGeminiAnalysis(price, rsi, macd, bb, sma) {
+            const apiKey = document.getElementById('api-key-input').value;
+            const verdictBox = document.getElementById('ai-verdict');
+
+            if(!apiKey) {
+                verdictBox.innerHTML = "🤖 <b>AI Pasif:</b> Gerçek yapay zeka analizi için lütfen yukarıdaki ayarlardan ücretsiz Gemini API anahtarınızı girin.";
+                return;
+            }
+
+            verdictBox.innerHTML = "🧠 Gemini yapay zekası piyasa verilerini sentezliyor, lütfen bekleyin...";
+
+            // Yapay zekaya verdiğimiz gizli emir (Prompt Engineering)
+            const prompt = `Sen profesyonel, Wall Street tecrübeli ve nesnel bir kripto para analistisin. Sadece aşağıda verdiğim güncel teknik verilere dayanarak, kısa, net ve vurucu 3-4 cümlelik bir piyasa analizi yap. Sonunda bir strateji önerisi (bekle, fırsat olabilir, dikkatli ol vb.) sun. Finansal tavsiye olmadığını belirtmene gerek yok.
+            
+            ANLIK PİYASA VERİLERİ:
+            - Varlık: Bitcoin (BTC)
+            - Zaman Dilimi: ${intervalTime}
+            - Anlık Fiyat: $${price.toFixed(2)}
+            - 20 Periyotluk Hareketli Ortalama (Trend): $${sma.toFixed(2)}
+            - RSI (Göreceli Güç Endeksi): ${rsi.toFixed(1)}
+            - MACD Durumu: ${macd}
+            - Bollinger Bantları: ${bb}
+            - Global Korku/Açgözlülük Endeksi: ${globalFng} / 100`;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await res.json();
+                
+                if(data.error) throw new Error(data.error.message);
+                
+                // Markdown kalın yazıları HTML'e çeviriyoruz
+                let aiText = data.candidates[0].content.parts[0].text;
+                aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+                
+                verdictBox.innerHTML = `✨ <b>Gemini AI Analizi:</b><br><br>${aiText}`;
+            } catch (error) {
+                console.error(error);
+                verdictBox.innerHTML = "❌ <b>Hata:</b> Yapay zeka ile iletişim kurulamadı. API anahtarınızın doğru olduğundan veya kotanızın dolmadığından emin olun.";
             }
         }
 
-        // Fiyat Çekme ve Analiz (MACD, Bollinger, RSI)
         async function fetchTA() {
             try {
-                // Fiyatları çek
                 const resPrices = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
                 const dataPrices = await resPrices.json();
                 dataPrices.forEach(c => {
@@ -214,15 +247,11 @@
                     if(id === "btc") btcCurrentPrice = price;
                 });
 
-                checkAlert(); // Alarmı kontrol et
-
-                // Teknik Analiz için Mumları Çek (BTC)
                 const resKlines = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=${intervalTime}&limit=50`);
                 const dataKlines = await resKlines.json();
                 const closes = dataKlines.map(d => parseFloat(d[4]));
                 const current = closes[closes.length - 1];
 
-                // 1. RSI (14)
                 let gains = 0, losses = 0;
                 for(let i = closes.length - 14; i < closes.length; i++) {
                     const diff = closes[i] - closes[i-1];
@@ -230,55 +259,38 @@
                 }
                 const rsi = 100 - (100 / (1 + (gains/14) / (losses/14 || 1)));
 
-                // 2. MACD (12, 26, 9)
-                const ema12 = calcEMA(closes.slice(-26), 12); // Basitleştirilmiş
+                const ema12 = calcEMA(closes.slice(-26), 12);
                 const ema26 = calcEMA(closes.slice(-50), 26);
                 const macdLine = ema12 - ema26;
                 const macdHist = macdLine > 0 ? "POZİTİF" : "NEGATİF";
 
-                // 3. Bollinger Bands (20, 2)
                 const sma20 = calcSMA(closes, 20);
                 const stdev = calcStdev(closes, 20);
                 const upperBB = sma20 + (stdev * 2);
                 const lowerBB = sma20 - (stdev * 2);
                 
-                let bbStatus = "KANAL İÇİ";
-                if(current > upperBB) bbStatus = "ÜST BANT KIRILDI (Direnç)";
-                if(current < lowerBB) bbStatus = "ALT BANT KIRILDI (Destek)";
+                let bbStatus = "Kanal İçi (Nötr)";
+                if(current > upperBB) bbStatus = "Üst Bant Kırıldı (Direnç/Aşırı Alım)";
+                if(current < lowerBB) bbStatus = "Alt Bant Kırıldı (Destek/Aşırı Satım)";
 
-                // Rozetleri Yazdır
                 document.getElementById('indicators-container').innerHTML = `
                     <span class="badge" style="color:${rsi>70?'#f6465d':(rsi<30?'#0ecb81':'#f3ba2f')}">RSI: ${rsi.toFixed(1)}</span>
                     <span class="badge" style="color:${macdLine>0?'#0ecb81':'#f6465d'}">MACD: ${macdHist}</span>
-                    <span class="badge" style="color:#2196f3">Bollinger: ${bbStatus}</span>
-                    <span class="badge" style="color:#eaecef">Trend (SMA20): $${sma20.toFixed(0)}</span>
+                    <span class="badge" style="color:#2196f3">Bollinger: ${bbStatus.split(' ')[0]}</span>
+                    <span class="badge" style="color:#eaecef">FNG: ${globalFng}</span>
                 `;
 
-                // Yapay Zeka Sentez Kararı
-                let aiText = `Şu anda <b>${intervalTime}</b> zaman diliminde analiz yapılıyor. <br><br>`;
-                
-                if (rsi > 70 && current > upperBB) {
-                    aiText += "🔴 <b>DİKKAT:</b> Fiyat Bollinger üst bandını kırdı ve RSI aşırı alım bölgesinde. Piyasa şu an çok şişmiş durumda. Bu seviyelerden sert kar satışları (düzeltme) gelebilir. Yeni işlem açmak yüksek risk taşır.";
-                } else if (rsi < 30 && current < lowerBB) {
-                    aiText += "🟢 <b>FIRSAT:</b> Fiyat Bollinger alt bandını deldi ve RSI aşırı satım bölgesinde. Panik satışları zirvede. Genellikle akıllı paranın (balinaların) yavaş yavaş toplama yaptığı, potansiyel dip bölgelerindeyiz.";
-                } else if (macdLine > 0 && current > sma20) {
-                    aiText += "🚀 <b>POZİTİF TREND:</b> MACD pozitif ve fiyat hareketli ortalamanın üzerinde seyrediyor. Yükseliş trendi gücünü koruyor. Geri çekilmeler, trend bozulmadığı sürece alım fırsatı olarak değerlendirilebilir.";
-                } else if (macdLine < 0 && current < sma20) {
-                    aiText += "⚠️ <b>NEGATİF TREND:</b> Fiyat hareketli ortalamanın altında ve MACD negatif bölgede. Satış baskısı devam ediyor. Aceleci destek alımları yerine, dönüş formasyonlarının (yeşil mumlar) netleşmesi beklenmeli.";
-                } else {
-                    aiText += "⚖️ <b>NÖTR SEYİR:</b> İndikatörler belirgin bir uç nokta göstermiyor. Fiyat Bollinger kanalı içinde dengede (konsolidasyon). Kırılım yönünü görmek için işlem açmadan beklemek en mantıklı strateji.";
-                }
-
-                document.getElementById('ai-verdict').innerHTML = aiText;
+                // Yapay zekayı tetikle
+                await getGeminiAnalysis(current, rsi, macdHist, bbStatus, sma20);
 
             } catch(e) { console.error(e); }
         }
 
-        // Ana Kontrol Döngüsü
         async function updateAll() {
-            countdown = 60;
+            countdown = 120;
             document.getElementById('timer').innerText = `Veriler analiz ediliyor...`;
             await renderPortfolio();
+            await fetchFNG();
             await fetchTA();
             document.getElementById('timer').innerText = `Tüm sistemler güncel.`;
         }
@@ -286,10 +298,9 @@
         setInterval(() => {
             countdown--;
             if(countdown <= 0) updateAll();
-            else document.getElementById('timer').innerText = `Veriler ${countdown} saniye içinde yenilenecek...`;
+            else document.getElementById('timer').innerText = `Veriler ve AI analizi ${countdown} saniye içinde yenilenecek...`;
         }, 1000);
 
-        // İlk Çalıştırma
         window.onload = updateAll;
     </script>
 </body>
