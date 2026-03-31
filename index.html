@@ -109,7 +109,7 @@
         if(savedKey) document.getElementById('api-key-input').value = savedKey;
 
         function saveApiKey() {
-            const key = document.getElementById('api-key-input').value;
+            const key = document.getElementById('api-key-input').value.trim();
             localStorage.setItem('gemini_api_key', key);
             alert("API Anahtarı tarayıcınıza güvenle kaydedildi! Şimdi sistemi yenileyin.");
             updateAll();
@@ -190,9 +190,9 @@
             } catch (error) { console.error(error); }
         }
 
-        // Gerçek Yapay Zeka İstek Fonksiyonu
+        // Gerçek Yapay Zeka İstek Fonksiyonu (Hata Dedektifli Sürüm)
         async function getGeminiAnalysis(price, rsi, macd, bb, sma) {
-            const apiKey = document.getElementById('api-key-input').value;
+            const apiKey = document.getElementById('api-key-input').value.trim(); // Boşlukları otomatik temizler
             const verdictBox = document.getElementById('ai-verdict');
 
             if(!apiKey) {
@@ -202,18 +202,17 @@
 
             verdictBox.innerHTML = "🧠 Gemini yapay zekası piyasa verilerini sentezliyor, lütfen bekleyin...";
 
-            // Yapay zekaya verdiğimiz gizli emir (Prompt Engineering)
             const prompt = `Sen profesyonel, Wall Street tecrübeli ve nesnel bir kripto para analistisin. Sadece aşağıda verdiğim güncel teknik verilere dayanarak, kısa, net ve vurucu 3-4 cümlelik bir piyasa analizi yap. Sonunda bir strateji önerisi (bekle, fırsat olabilir, dikkatli ol vb.) sun. Finansal tavsiye olmadığını belirtmene gerek yok.
             
             ANLIK PİYASA VERİLERİ:
             - Varlık: Bitcoin (BTC)
             - Zaman Dilimi: ${intervalTime}
             - Anlık Fiyat: $${price.toFixed(2)}
-            - 20 Periyotluk Hareketli Ortalama (Trend): $${sma.toFixed(2)}
-            - RSI (Göreceli Güç Endeksi): ${rsi.toFixed(1)}
+            - 20 Periyotluk Hareketli Ortalama: $${sma.toFixed(2)}
+            - RSI: ${rsi.toFixed(1)}
             - MACD Durumu: ${macd}
             - Bollinger Bantları: ${bb}
-            - Global Korku/Açgözlülük Endeksi: ${globalFng} / 100`;
+            - Global Korku/Açgözlülük: ${globalFng} / 100`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -223,16 +222,16 @@
                 });
                 const data = await res.json();
                 
+                // Google bize bir hata mesajı yolladıysa onu yakala
                 if(data.error) throw new Error(data.error.message);
                 
-                // Markdown kalın yazıları HTML'e çeviriyoruz
                 let aiText = data.candidates[0].content.parts[0].text;
                 aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
                 
                 verdictBox.innerHTML = `✨ <b>Gemini AI Analizi:</b><br><br>${aiText}`;
             } catch (error) {
-                console.error(error);
-                verdictBox.innerHTML = "❌ <b>Hata:</b> Yapay zeka ile iletişim kurulamadı. API anahtarınızın doğru olduğundan veya kotanızın dolmadığından emin olun.";
+                console.error("Gemini API Hatası:", error);
+                verdictBox.innerHTML = `❌ <b>Bağlantı Hatası:</b><br><br><span style="color:#f6465d; font-size:13px;"><b>Google'ın Yanıtı:</b> ${error.message}</span><br><br>Lütfen API anahtarınızın doğruluğunu kontrol edin. Eğer hata devam ediyorsa VPN kapatmayı veya tarayıcı reklam engelleyicisini (adblock) devredışı bırakmayı deneyin.`;
             }
         }
 
