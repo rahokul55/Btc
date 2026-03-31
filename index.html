@@ -1,13 +1,12 @@
-<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Kripto Asistanı</title>
+    <title>Pro Kripto Analiz & Tahmin Botu</title>
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #0b0e11; /* Daha koyu pro arka plan */
+            background-color: #0b0e11; 
             color: #eaecef; 
             padding: 15px; 
             margin: 0;
@@ -21,49 +20,46 @@
             border-radius: 8px; 
             padding: 15px; 
             margin-bottom: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        h3 { margin-top: 0; color: #848e9c; font-size: 14px; border-bottom: 1px solid #2b3139; padding-bottom: 5px; }
+        h3 { margin-top: 0; color: #848e9c; font-size: 14px; border-bottom: 1px solid #2b3139; padding-bottom: 5px; text-transform: uppercase;}
         
-        /* Coin Kartları Grid Tasarımı */
         .coins-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .coin-box { background-color: #2b3139; padding: 10px; border-radius: 6px; text-align: center; }
         .coin-name { font-size: 14px; font-weight: bold; color: #eaecef; }
         .coin-price { font-size: 16px; font-weight: bold; margin: 5px 0; }
         .coin-change { font-size: 12px; font-weight: bold; }
         
-        /* Renk Sınıfları */
         .green { color: #0ecb81; }
         .red { color: #f6465d; }
         .yellow { color: #f3ba2f; }
         
-        .fng-text { font-size: 20px; font-weight: bold; text-align: center; margin-top: 10px; }
-        .analysis { font-size: 14px; line-height: 1.5; color: #eaecef; }
+        /* Tahmin Bölümü Tasarımı */
+        .prediction-box { background-color: #242930; padding: 12px; border-radius: 6px; border-left: 4px solid #f3ba2f; margin-top: 10px;}
+        .target-level { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #3a4149;}
+        .target-level:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
+        .target-label { font-weight: 500; }
         
-        /* Haberler Tasarımı */
-        .news-item { margin-bottom: 10px; font-size: 13px; }
-        .news-item a { color: #f3ba2f; text-decoration: none; }
-        .news-item a:hover { text-decoration: underline; }
-        .news-source { color: #848e9c; font-size: 11px; }
+        .news-item { margin-bottom: 12px; font-size: 13px; background-color: #242930; padding: 10px; border-radius: 6px;}
+        .news-item a { color: #eaecef; text-decoration: none; font-weight: 500;}
+        .news-item a:hover { color: #f3ba2f; }
+        .news-source { color: #848e9c; font-size: 11px; margin-top: 5px; text-transform: uppercase;}
 
-        /* Buton */
         button { 
-            background-color: #f3ba2f; color: #0b0e11; border: none; padding: 12px; 
-            font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; 
-            width: 100%; transition: 0.2s; 
+            background-color: #f3ba2f; color: #0b0e11; border: none; padding: 15px; 
+            font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; 
+            width: 100%; transition: 0.2s; margin-bottom: 30px;
         }
-        button:active { background-color: #d4a017; transform: scale(0.98); }
-
-        /* TradingView Widget Konteyner */
-        .tradingview-widget-container { height: 300px; width: 100%; border-radius: 8px; overflow: hidden; }
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Pro Kripto Asistanı</h1>
-        <div class="timer" id="timer">Veriler 60 saniye içinde güncellenecek...</div>
+        <h1>🤖 Pro Kripto Analiz Botu</h1>
+        <div class="timer" id="timer">Sistem başlatılıyor...</div>
 
         <div class="card">
-            <h3>Piyasa Fiyatları (24s Değişim)</h3>
+            <h3>Canlı Piyasa Fiyatları</h3>
             <div class="coins-grid">
                 <div class="coin-box">
                     <div class="coin-name">BTC/USDT</div>
@@ -84,173 +80,147 @@
         </div>
 
         <div class="card">
-            <h3>Canlı Bitcoin Grafiği</h3>
-            <div class="tradingview-widget-container">
-                <div id="tradingview_chart"></div>
+            <h3>🎯 1-12 Saatlik Matematiksel Hedefler (BTC)</h3>
+            <div id="prediction-container" class="prediction-box">
+                Veriler hesaplanıyor...
             </div>
         </div>
 
         <div class="card">
-            <h3>Piyasa Psikolojisi ve Bot Analizi</h3>
-            <div id="fng" class="fng-text yellow">Yükleniyor...</div>
-            <p id="analysis" class="analysis">Analiz ediliyor...</p>
+            <h3>🌍 Global Korku ve Açgözlülük</h3>
+            <div id="fng" style="font-size: 24px; font-weight: bold; text-align: center; margin: 10px 0;">Yükleniyor...</div>
+            <div id="fng-analysis" style="font-size: 14px; color: #eaecef; line-height: 1.5;"></div>
         </div>
 
         <div class="card">
-            <h3>📰 Son Dakika Haberleri</h3>
-            <div id="news-container">Haberler çekiliyor...</div>
+            <h3>📰 Dünyadan Son Dakika Gelişmeleri</h3>
+            <div id="news-container">Haberler sunucudan çekiliyor...</div>
         </div>
 
-        <button onclick="verileriGuncelle()">🔄 Şimdi Yenile</button>
+        <button onclick="tumVerileriGuncelle()">🔄 Verileri Şimdi Güncelle</button>
     </div>
-
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     
     <script>
-        // TradingView Grafiğini Başlat
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": "BINANCE:BTCUSDT",
-            "interval": "60",
-            "timezone": "Europe/Istanbul",
-            "theme": "dark",
-            "style": "1",
-            "locale": "tr",
-            "enable_publishing": false,
-            "backgroundColor": "#1e2329",
-            "hide_top_toolbar": true,
-            "hide_legend": true,
-            "save_image": false,
-            "container_id": "tradingview_chart"
-        });
-
         let kalanSaniye = 60;
-        let sayac;
 
-        async function verileriGuncelle() {
-            // Sayacı sıfırla
-            kalanSaniye = 60;
-            document.getElementById('timer').innerText = `Veriler güncelleniyor...`;
-
+        // Fiyat ve Tahminleri Çek
+        async function fetchPricesAndPredict() {
             try {
-                // 1. Binance API'den BTC, ETH ve SOL verilerini çek
-                const symbols = '["BTCUSDT","ETHUSDT","SOLUSDT"]';
-                const binanceRes = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${symbols}`);
-                const binanceData = await binanceRes.json();
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+                const data = await res.json();
 
-                // Verileri ekrana basma fonksiyonu
-                const coiniGuncelle = (coinId, veri) => {
-                    const fiyat = parseFloat(veri.lastPrice);
-                    const degisim = parseFloat(veri.priceChangePercent);
+                data.forEach(coin => {
+                    const price = parseFloat(coin.lastPrice);
+                    const change = parseFloat(coin.priceChangePercent);
+                    const id = coin.symbol.replace("USDT", "").toLowerCase();
                     
-                    document.getElementById(`${coinId}-price`).innerText = "$" + fiyat.toLocaleString('en-US', {maximumFractionDigits: fiyat < 1000 ? 2 : 0});
-                    
-                    const changeEl = document.getElementById(`${coinId}-change`);
-                    changeEl.innerText = (degisim > 0 ? "+" : "") + degisim.toFixed(2) + "%";
-                    changeEl.className = "coin-change " + (degisim > 0 ? "green" : "red");
-                };
+                    document.getElementById(`${id}-price`).innerText = "$" + price.toLocaleString('en-US', {maximumFractionDigits: price < 1000 ? 2 : 0});
+                    const changeEl = document.getElementById(`${id}-change`);
+                    changeEl.innerText = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
+                    changeEl.className = "coin-change " + (change > 0 ? "green" : "red");
 
-                // Array içinden ilgili coinleri bul ve güncelle
-                binanceData.forEach(coin => {
-                    if(coin.symbol === "BTCUSDT") coiniGuncelle("btc", coin);
-                    if(coin.symbol === "ETHUSDT") coiniGuncelle("eth", coin);
-                    if(coin.symbol === "SOLUSDT") coiniGuncelle("sol", coin);
+                    // Sadece BTC için tahmin matematiği
+                    if(id === "btc") {
+                        const high = parseFloat(coin.highPrice);
+                        const low = parseFloat(coin.lowPrice);
+                        const close = price;
+                        
+                        // Pivot Noktası Formülü
+                        const pivot = (high + low + close) / 3;
+                        const r1 = (2 * pivot) - low; // Direnç 1
+                        const s1 = (2 * pivot) - high; // Destek 1
+                        const r2 = pivot + (high - low); // Direnç 2
+                        
+                        document.getElementById('prediction-container').innerHTML = `
+                            <div class="target-level"><span class="target-label">🚀 Güçlü Yükseliş Hedefi (R2):</span> <span class="green">$${r2.toFixed(0)}</span></div>
+                            <div class="target-level"><span class="target-label">📈 İlk Yükseliş Direnci (R1):</span> <span class="green">$${r1.toFixed(0)}</span></div>
+                            <div class="target-level"><span class="target-label">⚖️ Pivot (Denge) Noktası:</span> <span class="yellow">$${pivot.toFixed(0)}</span></div>
+                            <div class="target-level"><span class="target-label">📉 İlk Düşüş Desteği (S1):</span> <span class="red">$${s1.toFixed(0)}</span></div>
+                            <div style="font-size: 11px; color: #848e9c; margin-top: 10px; text-align:center;">*Bu hedefler son 24 saatin hacim ve fiyat dalgalanmalarına göre matematiksel olarak hesaplanmıştır.</div>
+                        `;
+                    }
                 });
-
-                // 2. Korku ve Açgözlülük
-                const fngRes = await fetch('https://api.alternative.me/fng/');
-                const fngData = await fngRes.json();
-                const fngDeger = parseInt(fngData.data[0].value);
-                const fngDurum = fngData.data[0].value_classification;
-                
-                const fngEl = document.getElementById('fng');
-                fngEl.innerText = `${fngDeger} / 100 (${fngDurum})`;
-                fngEl.className = "fng-text " + (fngDeger >= 50 ? "green" : "red");
-
-                // Bot Analizi
-                let analizMetni = "";
-                if (fngDeger >= 75) analizMetni = "⚠️ Piyasa aşırı açgözlü. Grafikte direnç noktalarına dikkat et, kar satışları gelebilir.";
-                else if (fngDeger <= 25) analizMetni = "💡 Piyasada aşırı korku hakim. Genellikle bu seviyeler orta/uzun vade için fırsat bölgeleridir.";
-                else analizMetni = "⚖️ Piyasa yön arayışında. İşlem açarken acele etme, trendin netleşmesini bekle.";
-                document.getElementById('analysis').innerText = analizMetni;
-
-                // 3. CryptoCompare'den Haberleri Çek
-                const newsRes = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN');
-                const newsData = await newsRes.json();
-                const topNews = newsData.Data.slice(0, 4); // Sadece son 4 haberi al
-                
-                let newsHTML = "";
-                topNews.forEach(news => {
-                    newsHTML += `
-                        <div class="news-item">
-                            <a href="${news.url}" target="_blank">${news.title}</a>
-                            <div class="news-source">${news.source_info.name}</div>
-                        </div>
-                    `;
-                });
-                document.getElementById('news-container').innerHTML = newsHTML;
-
             } catch (error) {
-                console.error("Hata:", error);
+                console.error("Fiyat hatası:", error);
+                document.getElementById('prediction-container').innerText = "Fiyat verisi alınamadı.";
             }
         }
 
-        // Otomatik yenileme sayacı
+        // Korku ve Açgözlülük Endeksini Çek
+        async function fetchFNG() {
+            try {
+                const res = await fetch('https://api.alternative.me/fng/');
+                const data = await res.json();
+                const deger = parseInt(data.data[0].value);
+                const durum = data.data[0].value_classification;
+                
+                const fngEl = document.getElementById('fng');
+                fngEl.innerText = `${deger} / 100 (${durum})`;
+                fngEl.className = (deger >= 55 ? "green" : (deger <= 45 ? "red" : "yellow"));
+
+                let analiz = "";
+                if(deger >= 75) analiz = "Piyasa 'Aşırı Açgözlü' aşamasında. FOMO (fırsatı kaçırma korkusu) yüksek. Balinalar satışa hazırlanıyor olabilir, yeni alım yaparken çok dikkatli ol.";
+                else if(deger <= 25) analiz = "Piyasa 'Aşırı Korku' içinde. Herkes satarken, genellikle akıllı paranın yavaş yavaş toplama yaptığı seviyelerdir.";
+                else analiz = "Piyasada net bir yön yok (Nötr). Büyük bir hareket öncesi yatay bir dinlenme süreci yaşanıyor olabilir.";
+                document.getElementById('fng-analysis').innerText = analiz;
+            } catch (error) {
+                console.error("FNG hatası:", error);
+                document.getElementById('fng').innerText = "Veri alınamadı.";
+            }
+        }
+
+        // Haberleri Çek
+        async function fetchNews() {
+            try {
+                const res = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN');
+                const data = await res.json();
+                
+                let newsHTML = "";
+                for(let i = 0; i < 4; i++) {
+                    const news = data.Data[i];
+                    newsHTML += `
+                        <div class="news-item">
+                            <a href="${news.url}" target="_blank">🔗 ${news.title}</a>
+                            <div class="news-source">Kaynak: ${news.source_info.name}</div>
+                        </div>
+                    `;
+                }
+                document.getElementById('news-container').innerHTML = newsHTML;
+            } catch (error) {
+                console.error("Haber hatası:", error);
+                document.getElementById('news-container').innerText = "Haber servisinde geçici bir yoğunluk var, daha sonra tekrar denenecek.";
+            }
+        }
+
+        // Tüm işlemleri sırayla ve güvenli bir şekilde çalıştır
+        async function tumVerileriGuncelle() {
+            kalanSaniye = 60;
+            document.getElementById('timer').innerText = `Sistem güncelleniyor...`;
+            
+            // Promise.all kullanarak aynı anda ama birbirinden bağımsız çeker
+            await Promise.all([
+                fetchPricesAndPredict(),
+                fetchFNG(),
+                fetchNews()
+            ]);
+            
+            document.getElementById('timer').innerText = `Tüm sistemler aktif.`;
+        }
+
+        // Sayacı güncelle
         function sayaciGuncelle() {
             kalanSaniye--;
             if(kalanSaniye <= 0) {
-                verileriGuncelle();
+                tumVerileriGuncelle();
             } else {
                 document.getElementById('timer').innerText = `Veriler ${kalanSaniye} saniye içinde otomatik güncellenecek...`;
             }
         }
 
-        // İlk açılışta çalıştır ve sayacı başlat
         window.onload = () => {
-            verileriGuncelle();
-            setInterval(sayaciGuncelle, 1000); // Her saniye sayacı düşür
+            tumVerileriGuncelle();
+            setInterval(sayaciGuncelle, 1000);
         };
-    </script>
-</body>
-</html>
-const binanceData = await binanceRes.json();
-                const fiyat = parseFloat(binanceData.price);
-                
-                // Fiyatı formatlı olarak yazdır ($ 65,000.00 şeklinde)
-                document.getElementById('price').innerText = "$" + fiyat.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
-                // 2. Alternative.me API'den Korku ve Açgözlülük Verisini Al
-                const fngRes = await fetch('https://api.alternative.me/fng/');
-                const fngData = await fngRes.json();
-                const fngDeger = parseInt(fngData.data[0].value);
-                const fngDurum = fngData.data[0].value_classification;
-                
-                document.getElementById('fng').innerText = fngDeger + " / 100";
-                document.getElementById('fng-status').innerText = "(" + fngDurum + ")";
-
-                // 3. Basit Karar ve Analiz Algoritması
-                let tahminYorumu = "Yön belirsiz, yatay seyir bekleniyor. ➡️";
-                
-                if (fngDeger >= 75) {
-                    tahminYorumu = "DİKKAT! Düşüş riski! 📉\nPiyasa aşırı açgözlü, büyük yatırımcılar kar satışı yapabilir.";
-                } else if (fngDeger <= 25) {
-                    tahminYorumu = "POTANSİYEL YÜKSELİŞ! 📈\nPiyasada aşırı korku var, ucuzdan alım fırsatı doğmuş olabilir.";
-                } else if (fngDeger > 25 && fngDeger < 50) {
-                    tahminYorumu = "Temkinli olun. 🔎\nPiyasa karamsar ama dip yapmamış olabilir.";
-                } else if (fngDeger >= 50 && fngDeger < 75) {
-                    tahminYorumu = "Piyasa pozitif. 🚀\nYükseliş trendi devam edebilir ama stop-loss kullanmayı unutmayın.";
-                }
-
-                document.getElementById('analysis').innerText = tahminYorumu;
-
-            } catch (error) {
-                document.getElementById('analysis').innerText = "Hata oluştu! İnternet bağlantını veya API servislerini kontrol et.";
-                console.error("Veri çekme hatası:", error);
-            }
-        }
-
-        // Sayfa ilk açıldığında verileri otomatik çek
-        window.onload = verileriGuncelle;
     </script>
 </body>
 </html>
