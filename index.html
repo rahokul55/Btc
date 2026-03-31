@@ -1,284 +1,296 @@
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Kripto Analist Botu</title>
+    <title>Pro Kripto Terminali V5</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #0b0e11; 
-            color: #eaecef; 
-            padding: 15px; 
-            margin: 0;
-        }
-        .container { max-width: 600px; margin: auto; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0b0e11; color: #eaecef; padding: 15px; margin: 0; font-size: 14px; }
+        .container { max-width: 800px; margin: auto; }
         h1 { font-size: 22px; color: #f3ba2f; text-align: center; margin-bottom: 5px; }
         .timer { text-align: center; color: #848e9c; font-size: 12px; margin-bottom: 15px; }
         
-        .card { 
-            background-color: #1e2329; 
-            border-radius: 8px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        h3 { margin-top: 0; color: #848e9c; font-size: 14px; border-bottom: 1px solid #2b3139; padding-bottom: 5px; text-transform: uppercase;}
+        .card { background-color: #1e2329; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h3 { margin-top: 0; color: #848e9c; font-size: 14px; border-bottom: 1px solid #2b3139; padding-bottom: 5px; text-transform: uppercase; display: flex; justify-content: space-between;}
         
-        .coins-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .coin-box { background-color: #2b3139; padding: 10px; border-radius: 6px; text-align: center; }
-        .coin-name { font-size: 14px; font-weight: bold; color: #eaecef; }
-        .coin-price { font-size: 16px; font-weight: bold; margin: 5px 0; }
-        .coin-change { font-size: 12px; font-weight: bold; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .box { background-color: #2b3139; padding: 10px; border-radius: 6px; text-align: center; }
         
-        .green { color: #0ecb81; }
-        .red { color: #f6465d; }
-        .yellow { color: #f3ba2f; }
-        .blue { color: #2196f3; }
+        .green { color: #0ecb81; } .red { color: #f6465d; } .yellow { color: #f3ba2f; } .blue { color: #2196f3; }
+        .text-bold { font-weight: bold; } .text-lg { font-size: 16px; } .text-sm { font-size: 12px; }
         
-        /* Gelişmiş Tahmin Bölümü */
-        .prediction-box { background-color: #242930; padding: 12px; border-radius: 6px; border-left: 4px solid #f3ba2f; margin-top: 10px;}
-        .target-level { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #3a4149;}
-        .target-level:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
-        .target-label { font-weight: 500; }
+        /* Zaman Dilimi Butonları */
+        .tf-buttons { display: flex; gap: 5px; justify-content: center; margin-bottom: 15px; }
+        .tf-btn { background-color: #2b3139; color: #eaecef; border: 1px solid #3a4149; padding: 5px 15px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .tf-btn.active { background-color: #f3ba2f; color: #0b0e11; font-weight: bold; }
         
-        /* İnsan Benzeri Analiz Bölümü */
-        .human-analysis { background-color: #1a2026; padding: 15px; border-radius: 6px; border: 1px solid #2b3139; margin-top: 15px;}
-        .indicator-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #2b3139; margin-right: 5px; margin-bottom: 10px;}
-        .analysis-text { font-size: 14px; line-height: 1.6; color: #eaecef; }
+        /* Formlar */
+        input, select { background-color: #0b0e11; color: #eaecef; border: 1px solid #3a4149; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; margin-bottom: 5px;}
+        .action-btn { background-color: #2196f3; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
+        .action-btn:active { transform: scale(0.98); }
 
-        .news-item { margin-bottom: 12px; font-size: 13px; background-color: #242930; padding: 10px; border-radius: 6px;}
-        .news-item a { color: #eaecef; text-decoration: none; font-weight: 500;}
-        .news-item a:hover { color: #f3ba2f; }
-        .news-source { color: #848e9c; font-size: 11px; margin-top: 5px; text-transform: uppercase;}
+        /* Portföy Tablosu */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;}
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #2b3139; }
+        th { color: #848e9c; }
 
-        button { 
-            background-color: #f3ba2f; color: #0b0e11; border: none; padding: 15px; 
-            font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; 
-            width: 100%; transition: 0.2s; margin-bottom: 30px;
-        }
-        button:active { transform: scale(0.98); }
+        .analysis-text { font-size: 14px; line-height: 1.6; color: #eaecef; background-color: #1a2026; padding: 15px; border-radius: 6px; border-left: 4px solid #f3ba2f; margin-top: 10px;}
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; background-color: #0b0e11; margin: 2px;}
+
+        .update-btn { background-color: #f3ba2f; color: #0b0e11; border: none; padding: 15px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 30px;}
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧠 Pro Kripto Analist Botu</h1>
-        <div class="timer" id="timer">Yapay zeka modülleri yükleniyor...</div>
+        <h1>🚀 Pro Kripto Terminali V5</h1>
+        <div class="timer" id="timer">Sistem yükleniyor...</div>
 
-        <div class="card">
-            <h3>Canlı Piyasa Fiyatları</h3>
-            <div class="coins-grid">
-                <div class="coin-box">
-                    <div class="coin-name">BTC/USDT</div>
-                    <div id="btc-price" class="coin-price">...</div>
-                    <div id="btc-change" class="coin-change">...</div>
+        <div class="tf-buttons" id="tf-buttons">
+            <button class="tf-btn" onclick="changeTF('15m')">15D (Scalp)</button>
+            <button class="tf-btn" onclick="changeTF('1h')">1S (Kısa Vade)</button>
+            <button class="tf-btn active" onclick="changeTF('4h')">4S (Orta Vade)</button>
+            <button class="tf-btn" onclick="changeTF('1d')">1G (Uzun Vade)</button>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>💼 Varlıklarım (PnL)</h3>
+                <div class="grid-3">
+                    <select id="p-coin"><option value="BTC">BTC</option><option value="ETH">ETH</option><option value="SOL">SOL</option></select>
+                    <input type="number" id="p-amount" placeholder="Miktar" step="0.001">
+                    <input type="number" id="p-price" placeholder="Alış Fiyatı $" step="1">
                 </div>
-                <div class="coin-box">
-                    <div class="coin-name">ETH/USDT</div>
-                    <div id="eth-price" class="coin-price">...</div>
-                    <div id="eth-change" class="coin-change">...</div>
+                <button class="action-btn" onclick="addPortfolio()">Portföye Ekle</button>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead><tr><th>Coin</th><th>Miktar</th><th>Alış</th><th>Kar/Zarar</th><th>İşlem</th></tr></thead>
+                        <tbody id="portfolio-body"></tbody>
+                    </table>
                 </div>
-                <div class="coin-box">
-                    <div class="coin-name">SOL/USDT</div>
-                    <div id="sol-price" class="coin-price">...</div>
-                    <div id="sol-change" class="coin-change">...</div>
-                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔔 Sesli Alarm (BTC)</h3>
+                <input type="number" id="alert-price" placeholder="Hedef Fiyat ($)" step="100">
+                <button class="action-btn" style="background-color: #f3ba2f; color: black;" onclick="setAlert()">Alarm Kur</button>
+                <div id="active-alert" style="margin-top: 10px; font-size: 13px; color: #848e9c;">Şu an aktif alarm yok.</div>
+                <div style="margin-top: 10px; font-size: 11px; color: #848e9c;">*Uyarı sesi için sekmenin açık kalması gerekir.</div>
             </div>
         </div>
 
         <div class="card">
-            <h3>📈 Gelişmiş Teknik Analiz (BTC)</h3>
-            <div id="prediction-container" class="prediction-box">Pivot noktaları hesaplanıyor...</div>
-            
-            <div class="human-analysis" id="human-analysis-box">
-                <div id="indicators-container">
-                    </div>
-                <div class="analysis-text" id="ai-verdict">Grafik verileri yorumlanıyor...</div>
+            <h3>📈 Canlı Fiyatlar</h3>
+            <div class="grid-3" id="prices-grid">
+                <div class="box"><div class="text-bold">BTC/USDT</div><div id="btc-price" class="text-lg">...</div></div>
+                <div class="box"><div class="text-bold">ETH/USDT</div><div id="eth-price" class="text-lg">...</div></div>
+                <div class="box"><div class="text-bold">SOL/USDT</div><div id="sol-price" class="text-lg">...</div></div>
             </div>
         </div>
 
         <div class="card">
-            <h3>🌍 Global Piyasa Psikolojisi</h3>
-            <div id="fng" style="font-size: 24px; font-weight: bold; text-align: center; margin: 10px 0;">Yükleniyor...</div>
-            <div id="fng-analysis" style="font-size: 14px; color: #eaecef; line-height: 1.5; text-align: center;"></div>
+            <h3>🧠 Kuantum Analiz Motoru (BTC)</h3>
+            <div id="indicators-container" style="margin-bottom: 10px; text-align: center;">Yükleniyor...</div>
+            <div class="analysis-text" id="ai-verdict">Grafik verileri yorumlanıyor...</div>
         </div>
 
-        <div class="card">
-            <h3>📰 Kripto Haber Akışı</h3>
-            <div id="news-container">Haberler sunucudan çekiliyor...</div>
-        </div>
-
-        <button onclick="tumVerileriGuncelle()">🔄 Verileri Şimdi Güncelle</button>
+        <button class="update-btn" onclick="updateAll()">🔄 Tüm Sistemleri Yenile</button>
     </div>
-    
+
+    <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
     <script>
-        let kalanSaniye = 60;
-        let globalFng = 50; // Karar sentezi için global değişken
+        let intervalTime = '4h';
+        let countdown = 60;
+        let btcCurrentPrice = 0;
+        let alertTarget = null;
+        let alertTriggered = false;
+        
+        // Portföy Verilerini LocalStorage'dan Çek
+        let portfolio = JSON.parse(localStorage.getItem('my_crypto_portfolio')) || [];
 
-        // 1. Fiyatları Çek ve Matematiksel Hedefleri Belirle
-        async function fetchPricesAndPredict() {
+        // Matematiksel İndikatör Fonksiyonları
+        const calcSMA = (data, period) => data.slice(-period).reduce((a, b) => a + b) / period;
+        const calcEMA = (data, period) => {
+            const k = 2 / (period + 1);
+            let ema = data[0];
+            for (let i = 1; i < data.length; i++) ema = (data[i] * k) + (ema * (1 - k));
+            return ema;
+        };
+        const calcStdev = (data, period) => {
+            const slice = data.slice(-period);
+            const mean = slice.reduce((a, b) => a + b) / period;
+            return Math.sqrt(slice.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / period);
+        };
+
+        // Zaman Dilimi Değiştirme
+        function changeTF(tf) {
+            intervalTime = tf;
+            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateAll();
+        }
+
+        // Portföy İşlemleri
+        function addPortfolio() {
+            const coin = document.getElementById('p-coin').value;
+            const amount = parseFloat(document.getElementById('p-amount').value);
+            const price = parseFloat(document.getElementById('p-price').value);
+            if(amount > 0 && price > 0) {
+                portfolio.push({coin, amount, price});
+                localStorage.setItem('my_crypto_portfolio', JSON.stringify(portfolio));
+                renderPortfolio();
+            }
+        }
+        function deletePortfolio(index) {
+            portfolio.splice(index, 1);
+            localStorage.setItem('my_crypto_portfolio', JSON.stringify(portfolio));
+            renderPortfolio();
+        }
+        async function renderPortfolio() {
+            const tbody = document.getElementById('portfolio-body');
+            if(portfolio.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>Portföy boş.</td></tr>"; return; }
+            
             try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
-                const data = await res.json();
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+                const prices = await res.json();
+                const priceMap = {};
+                prices.forEach(p => priceMap[p.symbol] = parseFloat(p.price));
 
-                data.forEach(coin => {
-                    const price = parseFloat(coin.lastPrice);
-                    const change = parseFloat(coin.priceChangePercent);
-                    const id = coin.symbol.replace("USDT", "").toLowerCase();
-                    
-                    document.getElementById(`${id}-price`).innerText = "$" + price.toLocaleString('en-US', {maximumFractionDigits: price < 1000 ? 2 : 0});
-                    const changeEl = document.getElementById(`${id}-change`);
-                    changeEl.innerText = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
-                    changeEl.className = "coin-change " + (change > 0 ? "green" : "red");
+                let html = "";
+                portfolio.forEach((item, index) => {
+                    const currentPrice = priceMap[`${item.coin}USDT`];
+                    const cost = item.amount * item.price;
+                    const value = item.amount * currentPrice;
+                    const pnl = value - cost;
+                    const pnlPercent = (pnl / cost) * 100;
+                    const colorClass = pnl >= 0 ? "green" : "red";
+                    const sign = pnl >= 0 ? "+" : "";
 
-                    if(id === "btc") {
-                        const high = parseFloat(coin.highPrice);
-                        const low = parseFloat(coin.lowPrice);
-                        const pivot = (high + low + price) / 3;
-                        const r1 = (2 * pivot) - low;
-                        const s1 = (2 * pivot) - high;
-                        
-                        document.getElementById('prediction-container').innerHTML = `
-                            <div class="target-level"><span class="target-label">📈 Kritik Direnç (Kırarsa Yükselir):</span> <span class="green">$${r1.toFixed(0)}</span></div>
-                            <div class="target-level"><span class="target-label">⚖️ Pivot (Denge Seviyesi):</span> <span class="yellow">$${pivot.toFixed(0)}</span></div>
-                            <div class="target-level"><span class="target-label">📉 Ana Destek (Kırılırsa Düşer):</span> <span class="red">$${s1.toFixed(0)}</span></div>
-                        `;
-                    }
+                    html += `<tr>
+                        <td class="text-bold">${item.coin}</td>
+                        <td>${item.amount}</td>
+                        <td>$${item.price}</td>
+                        <td class="${colorClass} text-bold">${sign}$${pnl.toFixed(2)} (${sign}${pnlPercent.toFixed(2)}%)</td>
+                        <td><button onclick="deletePortfolio(${index})" style="background:none;border:none;color:red;cursor:pointer;">✖</button></td>
+                    </tr>`;
                 });
-            } catch (error) {
-                console.error("Fiyat hatası:", error);
+                tbody.innerHTML = html;
+            } catch (e) { console.error("Portföy fiyatları çekilemedi."); }
+        }
+
+        // Alarm İşlemleri
+        function setAlert() {
+            const price = parseFloat(document.getElementById('alert-price').value);
+            if(price > 0) {
+                alertTarget = price;
+                alertTriggered = false;
+                document.getElementById('active-alert').innerHTML = `<span class="yellow">Aktif Hedef: $${price}</span> (İptal etmek için sayfayı yenile)`;
+            }
+        }
+        function checkAlert() {
+            if(alertTarget && !alertTriggered && btcCurrentPrice > 0) {
+                // Eğer anlık fiyat hedefe ulaştıysa (yaklaşık %0.1 sapma payı ile)
+                if(Math.abs(btcCurrentPrice - alertTarget) < (alertTarget * 0.001) || 
+                  (btcCurrentPrice >= alertTarget && btcCurrentPrice < alertTarget * 1.05)) {
+                    document.getElementById('alarm-sound').play();
+                    alert("🔔 HEDEF VURULDU! BTC Fiyatı: $" + btcCurrentPrice);
+                    alertTriggered = true;
+                    document.getElementById('active-alert').innerText = "Alarm çaldı ve durduruldu.";
+                }
             }
         }
 
-        // 2. Mum Grafikleri Çek, RSI/SMA Hesapla ve Sentez Yap (İnsan Modülü)
-        async function fetchAdvancedTA() {
+        // Fiyat Çekme ve Analiz (MACD, Bollinger, RSI)
+        async function fetchTA() {
             try {
-                // Son 24 tane 4 Saatlik mumu çek (Toplam 4 günlük veri)
-                const res = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=24');
-                const data = await res.json();
-                
-                // Mumların kapanış fiyatlarını al
-                const closes = data.map(d => parseFloat(d[4]));
-                const currentPrice = closes[closes.length - 1];
+                // Fiyatları çek
+                const resPrices = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+                const dataPrices = await resPrices.json();
+                dataPrices.forEach(c => {
+                    const price = parseFloat(c.price);
+                    const id = c.symbol.replace("USDT", "").toLowerCase();
+                    document.getElementById(`${id}-price`).innerText = "$" + price.toLocaleString('en-US', {maximumFractionDigits: 2});
+                    if(id === "btc") btcCurrentPrice = price;
+                });
 
-                // --- 20 Periyotluk SMA (Trend) Hesaplama ---
-                const sma20 = closes.slice(-20).reduce((a, b) => a + b, 0) / 20;
-                const isBullish = currentPrice > sma20;
-                
-                // --- 14 Periyotluk RSI Hesaplama ---
+                checkAlert(); // Alarmı kontrol et
+
+                // Teknik Analiz için Mumları Çek (BTC)
+                const resKlines = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=${intervalTime}&limit=50`);
+                const dataKlines = await resKlines.json();
+                const closes = dataKlines.map(d => parseFloat(d[4]));
+                const current = closes[closes.length - 1];
+
+                // 1. RSI (14)
                 let gains = 0, losses = 0;
                 for(let i = closes.length - 14; i < closes.length; i++) {
                     const diff = closes[i] - closes[i-1];
-                    if(diff > 0) gains += diff;
-                    else losses -= diff; // Negatif değeri pozitife çevirir
+                    diff > 0 ? gains += diff : losses -= diff;
                 }
-                const avgGain = gains / 14;
-                const avgLoss = losses / 14;
-                const rs = avgGain / (avgLoss === 0 ? 1 : avgLoss);
-                const rsi = 100 - (100 / (1 + rs));
+                const rsi = 100 - (100 / (1 + (gains/14) / (losses/14 || 1)));
 
-                // --- Rozetleri Oluştur ---
-                let rsiColor = rsi > 70 ? "red" : (rsi < 30 ? "green" : "yellow");
-                let rsiText = rsi > 70 ? "AŞIRI ALIM" : (rsi < 30 ? "AŞIRI SATIM" : "NÖTR");
+                // 2. MACD (12, 26, 9)
+                const ema12 = calcEMA(closes.slice(-26), 12); // Basitleştirilmiş
+                const ema26 = calcEMA(closes.slice(-50), 26);
+                const macdLine = ema12 - ema26;
+                const macdHist = macdLine > 0 ? "POZİTİF" : "NEGATİF";
+
+                // 3. Bollinger Bands (20, 2)
+                const sma20 = calcSMA(closes, 20);
+                const stdev = calcStdev(closes, 20);
+                const upperBB = sma20 + (stdev * 2);
+                const lowerBB = sma20 - (stdev * 2);
                 
-                let trendColor = isBullish ? "green" : "red";
-                let trendText = isBullish ? "YÜKSELİŞ" : "DÜŞÜŞ";
+                let bbStatus = "KANAL İÇİ";
+                if(current > upperBB) bbStatus = "ÜST BANT KIRILDI (Direnç)";
+                if(current < lowerBB) bbStatus = "ALT BANT KIRILDI (Destek)";
 
+                // Rozetleri Yazdır
                 document.getElementById('indicators-container').innerHTML = `
-                    <span class="indicator-badge" style="color: ${rsiColor}">RSI: ${rsi.toFixed(1)} (${rsiText})</span>
-                    <span class="indicator-badge" style="color: ${trendColor}">TREND: ${trendText}</span>
-                    <span class="indicator-badge" style="color: #2196f3">FNG: ${globalFng}</span>
+                    <span class="badge" style="color:${rsi>70?'#f6465d':(rsi<30?'#0ecb81':'#f3ba2f')}">RSI: ${rsi.toFixed(1)}</span>
+                    <span class="badge" style="color:${macdLine>0?'#0ecb81':'#f6465d'}">MACD: ${macdHist}</span>
+                    <span class="badge" style="color:#2196f3">Bollinger: ${bbStatus}</span>
+                    <span class="badge" style="color:#eaecef">Trend (SMA20): $${sma20.toFixed(0)}</span>
                 `;
 
-                // --- İnsan Benzeri Karar Motoru (AI Verdict) ---
-                let verdict = "";
-                if (isBullish && rsi < 70 && globalFng < 75) {
-                    verdict = "🟢 **Analiz:** Fiyat şu an yükseliş trendinde (SMA üzerinde) ve piyasada henüz aşırı bir şişme (RSI) yok. Trendin destek seviyelerinden güç alarak yukarı yönlü devam etmesi muhtemel. Geri çekilmeler alım fırsatı olabilir.";
-                } else if (!isBullish && rsi > 30 && globalFng > 25) {
-                    verdict = "🔴 **Analiz:** Fiyat düşüş trendinde (SMA altında) baskılanıyor. Piyasa tam olarak dibi bulmuş değil. Yeni bir işleme girmek için acele edilmemeli, direnç seviyelerinden red yeme ihtimali yüksek.";
-                } else if (rsi >= 70) {
-                    verdict = "⚠️ **Analiz:** DİKKAT! Fiyat çok hızlı yükseldi ve teknik olarak 'Aşırı Alım' bölgesinde. Bu seviyelerden ani kar satışları (düzeltmeler) gelebilir. Yeni alım yapmak şu an oldukça riskli.";
-                } else if (rsi <= 30) {
-                    verdict = "💡 **Analiz:** Fiyat sert bir düşüş yaşadı ve 'Aşırı Satım' bölgesine girdi. Genellikle büyük oyuncular bu panik anlarında alım yapmaya başlar. Destek seviyelerinden yukarı yönlü bir tepki sıçraması beklenebilir.";
+                // Yapay Zeka Sentez Kararı
+                let aiText = `Şu anda <b>${intervalTime}</b> zaman diliminde analiz yapılıyor. <br><br>`;
+                
+                if (rsi > 70 && current > upperBB) {
+                    aiText += "🔴 <b>DİKKAT:</b> Fiyat Bollinger üst bandını kırdı ve RSI aşırı alım bölgesinde. Piyasa şu an çok şişmiş durumda. Bu seviyelerden sert kar satışları (düzeltme) gelebilir. Yeni işlem açmak yüksek risk taşır.";
+                } else if (rsi < 30 && current < lowerBB) {
+                    aiText += "🟢 <b>FIRSAT:</b> Fiyat Bollinger alt bandını deldi ve RSI aşırı satım bölgesinde. Panik satışları zirvede. Genellikle akıllı paranın (balinaların) yavaş yavaş toplama yaptığı, potansiyel dip bölgelerindeyiz.";
+                } else if (macdLine > 0 && current > sma20) {
+                    aiText += "🚀 <b>POZİTİF TREND:</b> MACD pozitif ve fiyat hareketli ortalamanın üzerinde seyrediyor. Yükseliş trendi gücünü koruyor. Geri çekilmeler, trend bozulmadığı sürece alım fırsatı olarak değerlendirilebilir.";
+                } else if (macdLine < 0 && current < sma20) {
+                    aiText += "⚠️ <b>NEGATİF TREND:</b> Fiyat hareketli ortalamanın altında ve MACD negatif bölgede. Satış baskısı devam ediyor. Aceleci destek alımları yerine, dönüş formasyonlarının (yeşil mumlar) netleşmesi beklenmeli.";
                 } else {
-                    verdict = "⚖️ **Analiz:** Teknik göstergeler birbirine zıt sinyaller veriyor veya piyasa tam bir konsolidasyon (dinlenme) sürecinde. Yön arayışı sürüyor. Kırılım yönünü görmek için beklemek en güvenli stratejidir.";
+                    aiText += "⚖️ <b>NÖTR SEYİR:</b> İndikatörler belirgin bir uç nokta göstermiyor. Fiyat Bollinger kanalı içinde dengede (konsolidasyon). Kırılım yönünü görmek için işlem açmadan beklemek en mantıklı strateji.";
                 }
 
-                document.getElementById('ai-verdict').innerHTML = verdict;
+                document.getElementById('ai-verdict').innerHTML = aiText;
 
-            } catch (error) {
-                console.error("TA hatası:", error);
-                document.getElementById('ai-verdict').innerText = "Gelişmiş analiz verileri hesaplanamadı.";
-            }
+            } catch(e) { console.error(e); }
         }
 
-        // 3. Korku ve Açgözlülük
-        async function fetchFNG() {
-            try {
-                const res = await fetch('https://api.alternative.me/fng/');
-                const data = await res.json();
-                globalFng = parseInt(data.data[0].value); // Global değişkene ata
-                const durum = data.data[0].value_classification;
-                
-                const fngEl = document.getElementById('fng');
-                fngEl.innerText = `${globalFng} / 100 (${durum})`;
-                fngEl.className = (globalFng >= 55 ? "green" : (globalFng <= 45 ? "red" : "yellow"));
-            } catch (error) {
-                console.error("FNG hatası:", error);
-            }
+        // Ana Kontrol Döngüsü
+        async function updateAll() {
+            countdown = 60;
+            document.getElementById('timer').innerText = `Veriler analiz ediliyor...`;
+            await renderPortfolio();
+            await fetchTA();
+            document.getElementById('timer').innerText = `Tüm sistemler güncel.`;
         }
 
-        // 4. Haberleri Çek
-        async function fetchNews() {
-            try {
-                const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss');
-                const data = await res.json();
-                
-                let newsHTML = "";
-                for(let i = 0; i < 4; i++) {
-                    const news = data.items[i];
-                    const dateObj = new Date(news.pubDate);
-                    const saat = dateObj.getHours().toString().padStart(2, '0') + ":" + dateObj.getMinutes().toString().padStart(2, '0');
+        setInterval(() => {
+            countdown--;
+            if(countdown <= 0) updateAll();
+            else document.getElementById('timer').innerText = `Veriler ${countdown} saniye içinde yenilenecek...`;
+        }, 1000);
 
-                    newsHTML += `
-                        <div class="news-item">
-                            <a href="${news.link}" target="_blank">🔗 ${news.title}</a>
-                            <div class="news-source">CoinTelegraph | ⏱️ ${saat}</div>
-                        </div>
-                    `;
-                }
-                document.getElementById('news-container').innerHTML = newsHTML;
-            } catch (error) {
-                console.error("Haber hatası:", error);
-                document.getElementById('news-container').innerText = "Haberler yüklenemedi.";
-            }
-        }
-
-        // Tüm işlemleri sıralı çalıştır (FNG'nin TA'dan önce çekilmesi önemli)
-        async function tumVerileriGuncelle() {
-            kalanSaniye = 60;
-            document.getElementById('timer').innerText = `Derin analiz yapılıyor...`;
-            
-            await fetchPricesAndPredict();
-            await fetchFNG(); 
-            await fetchAdvancedTA(); // TA, FNG'yi kullandığı için sonra çalışmalı
-            await fetchNews();
-            
-            document.getElementById('timer').innerText = `Analiz tamamlandı. Veriler aktif.`;
-        }
-
-        function sayaciGuncelle() {
-            kalanSaniye--;
-            if(kalanSaniye <= 0) {
-                tumVerileriGuncelle();
-            } else {
-                document.getElementById('timer').innerText = `Veriler ${kalanSaniye} saniye içinde yenilenecek...`;
-            }
-        }
-
-        window.onload = () => {
-            tumVerileriGuncelle();
-            setInterval(sayaciGuncelle, 1000);
-        };
+        // İlk Çalıştırma
+        window.onload = updateAll;
     </script>
 </body>
 </html>
