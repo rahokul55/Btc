@@ -103,7 +103,7 @@
     <script>
         let kalanSaniye = 60;
 
-        // Fiyat ve Tahminleri Çek
+        // 1. Fiyat ve Tahminleri Çek
         async function fetchPricesAndPredict() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
@@ -146,7 +146,7 @@
             }
         }
 
-        // Korku ve Açgözlülük Endeksini Çek
+        // 2. Korku ve Açgözlülük Endeksini Çek
         async function fetchFNG() {
             try {
                 const res = await fetch('https://api.alternative.me/fng/');
@@ -169,35 +169,40 @@
             }
         }
 
-        // Haberleri Çek
+        // 3. Haberleri Çek (CoinTelegraph RSS)
         async function fetchNews() {
             try {
-                const res = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN');
+                const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss');
                 const data = await res.json();
                 
                 let newsHTML = "";
                 for(let i = 0; i < 4; i++) {
-                    const news = data.Data[i];
+                    const news = data.items[i];
+                    
+                    // Saati düzelt
+                    const dateObj = new Date(news.pubDate);
+                    const saat = dateObj.getHours().toString().padStart(2, '0') + ":" + dateObj.getMinutes().toString().padStart(2, '0');
+
                     newsHTML += `
                         <div class="news-item">
-                            <a href="${news.url}" target="_blank">🔗 ${news.title}</a>
-                            <div class="news-source">Kaynak: ${news.source_info.name}</div>
+                            <a href="${news.link}" target="_blank">🔗 ${news.title}</a>
+                            <div class="news-source">Kaynak: CoinTelegraph | ⏱️ ${saat}</div>
                         </div>
                     `;
                 }
                 document.getElementById('news-container').innerHTML = newsHTML;
             } catch (error) {
                 console.error("Haber hatası:", error);
-                document.getElementById('news-container').innerText = "Haber servisinde geçici bir yoğunluk var, daha sonra tekrar denenecek.";
+                document.getElementById('news-container').innerText = "Haberler şu an yüklenemiyor, lütfen daha sonra tekrar deneyin.";
             }
         }
 
-        // Tüm işlemleri sırayla ve güvenli bir şekilde çalıştır
+        // Tüm işlemleri güvenli şekilde çalıştır
         async function tumVerileriGuncelle() {
             kalanSaniye = 60;
             document.getElementById('timer').innerText = `Sistem güncelleniyor...`;
             
-            // Promise.all kullanarak aynı anda ama birbirinden bağımsız çeker
+            // Promise.all aynı anda ama bağımsız çeker
             await Promise.all([
                 fetchPricesAndPredict(),
                 fetchFNG(),
@@ -217,6 +222,7 @@
             }
         }
 
+        // Sayfa yüklendiğinde başlat
         window.onload = () => {
             tumVerileriGuncelle();
             setInterval(sayaciGuncelle, 1000);
