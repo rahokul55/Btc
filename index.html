@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC Analiz Asistanı</title>
+    <style>
+        /* Mobil Uyumlu Karanlık Tema Tasarımı */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #121212; 
+            color: #ffffff; 
+            padding: 20px; 
+            margin: 0;
+            text-align: center; 
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+        h1 { 
+            font-size: 24px; 
+            margin-bottom: 20px; 
+            color: #f3ba2f; /* Binance Sarısı */
+        }
+        .card { 
+            background-color: #1e1e1e; 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+        }
+        h3 {
+            margin-top: 0;
+            color: #aaaaaa;
+            font-size: 16px;
+        }
+        .price { 
+            font-size: 36px; 
+            font-weight: bold; 
+            color: #4caf50; 
+        }
+        .fng { 
+            font-size: 32px; 
+            font-weight: bold;
+            color: #ff9800; 
+        }
+        .analysis { 
+            font-size: 18px; 
+            line-height: 1.5; 
+            color: #e0e0e0; 
+            font-weight: 500;
+        }
+        button { 
+            background-color: #f3ba2f; 
+            color: #121212; 
+            border: none; 
+            padding: 15px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 10px; 
+            transition: 0.2s;
+        }
+        button:active { 
+            background-color: #d4a017; 
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 BTC Analiz Asistanı</h1>
+
+        <div class="card">
+            <h3>💰 Güncel Bitcoin Fiyatı</h3>
+            <div id="price" class="price">Yükleniyor...</div>
+        </div>
+
+        <div class="card">
+            <h3>🌍 Korku / Açgözlülük Endeksi</h3>
+            <div id="fng" class="fng">...</div>
+            <div id="fng-status" style="margin-top: 5px; color: #888;"></div>
+        </div>
+
+        <div class="card">
+            <h3>🧠 Botun Piyasa Analizi</h3>
+            <div id="analysis" class="analysis">Piyasa verileri toplanıyor...</div>
+        </div>
+
+        <button onclick="verileriGuncelle()">🔄 Verileri Yenile</button>
+    </div>
+
+    <script>
+        async function verileriGuncelle() {
+            // Yükleniyor durumunu göster
+            document.getElementById('price').innerText = "Yükleniyor...";
+            document.getElementById('fng').innerText = "...";
+            document.getElementById('fng-status').innerText = "";
+            document.getElementById('analysis').innerText = "Analiz ediliyor...";
+
+            try {
+                // 1. Binance API'den Bitcoin Fiyatını Al
+                const binanceRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+                const binanceData = await binanceRes.json();
+                const fiyat = parseFloat(binanceData.price);
+                
+                // Fiyatı formatlı olarak yazdır ($ 65,000.00 şeklinde)
+                document.getElementById('price').innerText = "$" + fiyat.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                // 2. Alternative.me API'den Korku ve Açgözlülük Verisini Al
+                const fngRes = await fetch('https://api.alternative.me/fng/');
+                const fngData = await fngRes.json();
+                const fngDeger = parseInt(fngData.data[0].value);
+                const fngDurum = fngData.data[0].value_classification;
+                
+                document.getElementById('fng').innerText = fngDeger + " / 100";
+                document.getElementById('fng-status').innerText = "(" + fngDurum + ")";
+
+                // 3. Basit Karar ve Analiz Algoritması
+                let tahminYorumu = "Yön belirsiz, yatay seyir bekleniyor. ➡️";
+                
+                if (fngDeger >= 75) {
+                    tahminYorumu = "DİKKAT! Düşüş riski! 📉\nPiyasa aşırı açgözlü, büyük yatırımcılar kar satışı yapabilir.";
+                } else if (fngDeger <= 25) {
+                    tahminYorumu = "POTANSİYEL YÜKSELİŞ! 📈\nPiyasada aşırı korku var, ucuzdan alım fırsatı doğmuş olabilir.";
+                } else if (fngDeger > 25 && fngDeger < 50) {
+                    tahminYorumu = "Temkinli olun. 🔎\nPiyasa karamsar ama dip yapmamış olabilir.";
+                } else if (fngDeger >= 50 && fngDeger < 75) {
+                    tahminYorumu = "Piyasa pozitif. 🚀\nYükseliş trendi devam edebilir ama stop-loss kullanmayı unutmayın.";
+                }
+
+                document.getElementById('analysis').innerText = tahminYorumu;
+
+            } catch (error) {
+                document.getElementById('analysis').innerText = "Hata oluştu! İnternet bağlantını veya API servislerini kontrol et.";
+                console.error("Veri çekme hatası:", error);
+            }
+        }
+
+        // Sayfa ilk açıldığında verileri otomatik çek
+        window.onload = verileriGuncelle;
+    </script>
+</body>
+</html>
